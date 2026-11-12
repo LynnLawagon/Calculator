@@ -3,38 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculator</title>
+    <title>8BitDo Retro Numpad Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Orbitron:wght@600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <main class="stage">
+        <section class="device-shell" aria-label="8BitDo Retro Numpad Calculator">
+            <!-- Subtle internal PCB / screw / translucent casing details -->
+            <span class="screw screw-tl" aria-hidden="true"></span>
+            <span class="screw screw-tr" aria-hidden="true"></span>
+            <span class="screw screw-bl" aria-hidden="true"></span>
+            <span class="screw screw-br" aria-hidden="true"></span>
+            <div class="pcb-trace pcb-trace-top" aria-hidden="true"></div>
+            <div class="pcb-trace pcb-trace-side" aria-hidden="true"></div>
 
-    <div id="hero">
+            <!-- Top Hardware Controls Bar (Rotary Dial + 3 Round Buttons) -->
+            <header class="top-controls">
+                <div class="rotary-group">
+                    <div class="rotary-labels" aria-hidden="true">
+                        <span data-mode-label="BT">BT</span>
+                        <span data-mode-label="OFF">OFF</span>
+                        <span data-mode-label="2.4" class="active">2.4</span>
+                    </div>
+                    <div class="rotary-ticks" aria-hidden="true">
+                        <span class="tick tick-left"></span>
+                        <span class="tick tick-mid"></span>
+                        <span class="tick tick-right"></span>
+                    </div>
+                    <button type="button" id="mode-dial" class="rotary-dial pos-24" title="Switch Mode (BT / OFF / 2.4G)" aria-label="Mode selector dial: 2.4G">
+                        <span class="dial-ridge"></span>
+                    </button>
+                </div>
 
-        <input id="display" readonly>
-        <div id="btn">
-            <button onclick="appendToDisplay('7')">7</button>
-            <button onclick="appendToDisplay('8')">8</button>
-            <button onclick="appendToDisplay('9')">9</button>
-            <button onclick="appendToDisplay('+')" class ="operator">+</button>
+                <div class="round-buttons">
+                    <div class="round-btn-unit">
+                        <span class="status-led" id="led-sound" aria-hidden="true"></span>
+                        <button type="button" id="btn-sound" class="round-btn active" title="Toggle Mechanical Key Clicks" aria-label="Toggle Sound">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                <path d="M5 9.5a10 10 0 0 1 14 0" />
+                                <path d="M8.5 13a5.5 5.5 0 0 1 7 0" />
+                                <circle cx="12" cy="16.5" r="1.2" fill="currentColor" stroke="none" />
+                            </svg>
+                        </button>
+                    </div>
 
-            <button onclick="appendToDisplay('4')">4</button>
-            <button onclick="appendToDisplay('5')">5</button>
-            <button onclick="appendToDisplay('6')">6</button>
-            <button onclick="appendToDisplay('-')" class ="operator">-</button>
+                    <div class="round-btn-unit">
+                        <span class="status-led-spacer" aria-hidden="true"></span>
+                        <button type="button" id="btn-sign" class="round-btn" title="Toggle Positive / Negative (+/-)" aria-label="Toggle Positive or Negative">
+                            <span class="round-icon-box">+/−</span>
+                        </button>
+                    </div>
 
-            <button onclick="appendToDisplay('1')">1</button>
-            <button onclick="appendToDisplay('2')">2</button>
-            <button onclick="appendToDisplay('3')">3</button>
-            <button onclick="appendToDisplay('*')" class ="operator">*</button>
+                    <div class="round-btn-unit">
+                        <span class="status-led active" id="led-cal" aria-hidden="true"></span>
+                        <button type="button" id="btn-percent" class="round-btn" title="Percentage (%)" aria-label="Percentage">
+                            <span class="cal-text">CAL%</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
 
-            <button onclick="appendToDisplay('.')" class ="operator">.</button>
-            <button onclick="appendToDisplay('0')">0</button>
-            <button onclick="appendToDisplay('/')" class ="operator">/</button>
+            <!-- Brand Header & Recessed LCD Display -->
+            <section class="lcd-module" aria-label="Calculator Display">
+                <div class="lcd-header-bar">
+                    <span class="brand-logo">8BitDo</span>
+                    <span class="model-banner">RETRO NUMPAD</span>
+                    <span class="power-badge">
+                        POWER
+                        <span class="battery-icon" id="power-indicator"></span>
+                    </span>
+                </div>
 
-            <button onclick="calculateResult()" class ="operator">=</button>
-            <button onclick="clearDisplay()" class ="operator">C</button>
-        </div>
-    </div>
+                <div class="lcd-bezel">
+                    <div class="lcd-screen" id="lcd-screen">
+                        <div class="lcd-expression" id="expression" aria-live="polite"></div>
+                        <div class="lcd-main-row">
+                            <span class="lcd-ghost" aria-hidden="true">888888888</span>
+                            <output class="lcd-value" id="display" aria-live="assertive">0</output>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lcd-footer-bar" aria-hidden="true">
+                    <span class="footer-tag">SOC(%)</span>
+                    <span class="footer-line"></span>
+                    <span class="footer-tag">INPUT(W)</span>
+                </div>
+            </section>
+
+            <!-- 4-Column Tactile Mechanical Keycap Matrix (Exact 8BitDo Numpad Layout) -->
+            <section class="keypad-well" id="btn" aria-label="Calculator Keypad">
+                <!-- Row 1 -->
+                <button type="button" class="keycap key-util" data-action="clear" aria-label="All Clear">
+                    <span class="cap-top">C</span>
+                </button>
+                <button type="button" class="keycap key-op" data-operator="/" aria-label="Divide">
+                    <span class="cap-top">÷</span>
+                </button>
+                <button type="button" class="keycap key-op" data-operator="*" aria-label="Multiply">
+                    <span class="cap-top">×</span>
+                </button>
+                <button type="button" class="keycap key-util" data-action="backspace" aria-label="Backspace">
+                    <span class="cap-top">←</span>
+                </button>
+
+                <!-- Row 2 -->
+                <button type="button" class="keycap key-num" data-digit="7">
+                    <span class="cap-top">7</span>
+                </button>
+                <button type="button" class="keycap key-num" data-digit="8">
+                    <span class="cap-top">8</span>
+                </button>
+                <button type="button" class="keycap key-num" data-digit="9">
+                    <span class="cap-top">9</span>
+                </button>
+                <button type="button" class="keycap key-op" data-operator="-" aria-label="Subtract">
+                    <span class="cap-top">−</span>
+                </button>
+
+                <!-- Row 3 -->
+                <button type="button" class="keycap key-num" data-digit="4">
+                    <span class="cap-top">4</span>
+                </button>
+                <button type="button" class="keycap key-num home-key" data-digit="5">
+                    <span class="cap-top">5<i class="homing-bar" aria-hidden="true"></i></span>
+                </button>
+                <button type="button" class="keycap key-num" data-digit="6">
+                    <span class="cap-top">6</span>
+                </button>
+                <button type="button" class="keycap key-op" data-operator="+" aria-label="Add">
+                    <span class="cap-top">+</span>
+                </button>
+
+                <!-- Row 4 & 5 (with 2u 0 key and 2u vertical ENTER key) -->
+                <button type="button" class="keycap key-num" data-digit="1">
+                    <span class="cap-top">1</span>
+                </button>
+                <button type="button" class="keycap key-num" data-digit="2">
+                    <span class="cap-top">2</span>
+                </button>
+                <button type="button" class="keycap key-num" data-digit="3">
+                    <span class="cap-top">3</span>
+                </button>
+                <button type="button" class="keycap key-enter" data-action="equals" aria-label="Enter / Equals">
+                    <span class="cap-top"><span class="vertical-text">ENTER</span></span>
+                </button>
+
+                <button type="button" class="keycap key-num key-zero" data-digit="0">
+                    <span class="cap-top">0</span>
+                </button>
+                <button type="button" class="keycap key-num" data-action="decimal" aria-label="Decimal Point">
+                    <span class="cap-top">.</span>
+                </button>
+            </section>
+        </section>
+    </main>
 
     <script src="script.js"></script>
 </body>

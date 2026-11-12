@@ -1,67 +1,683 @@
-body{
-    background-color: #5e5d59;
+/* ==========================================================================
+   8BitDo Retro Numpad Calculator — Translucent Green / Yellow Accent Edition
+   Color Tokens grounded in user palette + translucent green handheld reference
+   ========================================================================== */
+:root {
+    /* Core Palette */
+    --sage-green: #DCE8D5;
+    --light-cream: #F4F5E9;
+    --forest-green: #203B32;
+    --muted-green: #5F876D;
+    --dark-lcd-green: #253F35;
+    --lcd-text: #D8EDC7;
+    --soft-yellow: #E8C96F;
+
+    /* Translucent Olive/Forest Shell & Keycap Derived Tones */
+    --shell-base: #365028;
+    --shell-mid: #476635;
+    --shell-edge: #1c2c14;
+    --shell-highlight: rgba(220, 232, 213, 0.22);
+    --well-bg: #26381c;
+    --cap-top-green: #7a9456;
+    --cap-top-light: #8ea867;
+    --cap-skirt: #485e30;
+    --cap-border: #2a3a1b;
+    --lcd-glow: #d8f24d;
+    --lcd-ghost: rgba(188, 224, 64, 0.09);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+    min-height: 100%;
+    background-color: var(--light-cream);
+    background-image:
+        radial-gradient(circle at 50% 35%, #ffffff 0%, var(--light-cream) 55%, var(--sage-green) 100%);
+    font-family: 'Chakra Petch', sans-serif;
+    color: var(--lcd-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.stage {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ==========================================================================
+   Outer Translucent Green Handheld Shell
+   ========================================================================== */
+.device-shell {
+    position: relative;
+    width: 100%;
+    max-width: 392px;
+    background: linear-gradient(165deg, #4b6938 0%, #3a542b 42%, #2e4521 100%);
+    border-radius: 26px;
+    padding: 20px 20px 22px;
+    border: 3px solid var(--shell-edge);
+    box-shadow:
+        0 24px 48px rgba(32, 59, 50, 0.28),
+        0 6px 14px rgba(28, 44, 20, 0.35),
+        inset 0 2px 3px rgba(220, 232, 213, 0.35),
+        inset 0 -4px 8px rgba(18, 30, 12, 0.65),
+        inset 0 0 0 6px rgba(82, 112, 62, 0.45);
+    transition: transform 0.2s ease;
+}
+
+/* Translucent internal ribs & corner standoffs */
+.device-shell::before {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    border-radius: 20px;
+    border: 1.5px solid rgba(220, 232, 213, 0.14);
+    pointer-events: none;
+}
+
+.screw {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(24, 38, 17, 0.65) 35%, rgba(122, 148, 86, 0.25) 70%, transparent 72%);
+    border: 1px solid rgba(24, 38, 17, 0.4);
+    pointer-events: none;
+}
+.screw-tl { top: 10px; left: 10px; }
+.screw-tr { top: 10px; right: 10px; }
+.screw-bl { bottom: 10px; left: 10px; }
+.screw-br { bottom: 10px; right: 10px; }
+
+.pcb-trace {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0.16;
+}
+.pcb-trace-top {
+    top: 12px;
+    left: 44px;
+    right: 44px;
+    height: 4px;
+    border-top: 1px dashed var(--sage-green);
+    border-bottom: 1px solid var(--sage-green);
+}
+.pcb-trace-side {
+    top: 165px;
+    bottom: 35px;
+    right: 8px;
+    width: 4px;
+    border-left: 1px solid var(--sage-green);
+}
+
+/* ==========================================================================
+   Top Controls: Rotary Mode Dial & 3 Round Tactile Buttons
+   ========================================================================== */
+.top-controls {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding: 0 2px;
+}
+
+.rotary-group {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
+    width: 82px;
 }
 
-button{
-    width: 100px;
-    height: 50px;
-    border-radius: 10px;
-    border: none;
-    padding: 10px;
-    margin: 2px;
-    background-color: #a79c8f3e;
-    font-size: 18px;
+.rotary-labels {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--soft-yellow);
+    margin-bottom: 2px;
+}
+
+.rotary-labels span {
+    opacity: 0.65;
+    transition: opacity 0.15s ease, text-shadow 0.15s ease;
+}
+
+.rotary-labels span.active {
+    opacity: 1;
+    text-shadow: 0 0 6px rgba(232, 201, 111, 0.55);
+}
+
+.rotary-ticks {
+    position: relative;
+    width: 58px;
+    height: 8px;
+    margin-bottom: -2px;
+}
+
+.tick {
+    position: absolute;
+    width: 2px;
+    height: 8px;
+    background-color: var(--soft-yellow);
+    border-radius: 1px;
+}
+.tick-left { left: 6px; transform: rotate(-32deg); }
+.tick-mid { left: 50%; transform: translateX(-50%); height: 6px; }
+.tick-right { right: 6px; transform: rotate(32deg); }
+
+.rotary-dial {
+    position: relative;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #383c39 0%, #1d201e 70%, #111312 100%);
+    border: 2px solid #141715;
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.45),
+        inset 0 1px 2px rgba(255, 255, 255, 0.16),
+        0 0 0 4px rgba(28, 44, 20, 0.55);
     cursor: pointer;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-    
-#btn{
-    display: grid;
-    grid-template-columns: repeat(4, 0fr);
-    gap: 5px;
-    padding: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-#hero{
-    text-align: center;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin-top: 50px;
-    font-size: 24px;
-    background-color: #FFF4E6;
-    border-radius: 15px;
-    padding: 20px;
-    max-width: 500px;
-    overflow: hidden;
+.rotary-dial.pos-bt { transform: rotate(-36deg); }
+.rotary-dial.pos-off { transform: rotate(0deg); }
+.rotary-dial.pos-24 { transform: rotate(36deg); }
+
+.dial-ridge {
+    position: relative;
+    width: 11px;
+    height: 46px;
+    background: linear-gradient(90deg, #1b1e1c 0%, #323633 50%, #171918 100%);
+    border-radius: 4px;
+    border: 1px solid #0e100f;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-#display{
-    width: 90%;
-    padding: 20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 60px;
-    text-align: right;
-    border:none;
-    background-color: #e6e2d3;
-    height: 70px;
+.dial-ridge::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2.5px;
+    height: 15px;
+    background-color: var(--soft-yellow);
+    border-radius: 1px;
+}
+
+.round-buttons {
+    display: flex;
+    align-items: flex-end;
+    gap: 11px;
+}
+
+.round-btn-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-led,
+.status-led-spacer {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.status-led {
+    background-color: rgba(220, 232, 213, 0.25);
+    border: 1px solid rgba(20, 32, 15, 0.6);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.status-led.active {
+    background-color: var(--lcd-glow);
+    box-shadow: 0 0 7px var(--lcd-glow);
+}
+
+.round-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #383c39 0%, #1e211f 75%, #131514 100%);
+    border: 2px solid #131514;
+    color: rgba(220, 232, 213, 0.45);
+    font-family: 'Chakra Petch', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        0 4px 6px rgba(0, 0, 0, 0.45),
+        inset 0 2px 3px rgba(255, 255, 255, 0.14),
+        inset 0 -3px 5px rgba(0, 0, 0, 0.6),
+        0 0 0 4px rgba(28, 44, 20, 0.55);
+    transition: transform 0.08s ease, box-shadow 0.08s ease, color 0.15s ease;
+}
+
+.round-btn:hover {
+    color: var(--soft-yellow);
+}
+
+.round-btn.active {
+    color: var(--soft-yellow);
+}
+
+.round-btn:active,
+.round-btn.pressed {
+    transform: translateY(2px);
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.5),
+        inset 0 3px 6px rgba(0, 0, 0, 0.75),
+        0 0 0 4px rgba(28, 44, 20, 0.55);
+}
+
+.round-icon-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 20px;
+    border: 1.5px solid currentColor;
+    border-radius: 3px;
+    font-size: 11px;
+    letter-spacing: -0.04em;
+}
+
+.cal-text {
+    font-size: 11.5px;
+    letter-spacing: 0.05em;
+}
+
+/* ==========================================================================
+   Brand Bar & Recessed Dark Green 7-Segment LCD Display
+   ========================================================================== */
+.lcd-module {
+    background: #1a2815;
     border-radius: 10px;
+    padding: 8px 10px;
+    margin-bottom: 14px;
+    border: 2px solid #131d0f;
+    box-shadow:
+        inset 0 2px 4px rgba(0, 0, 0, 0.6),
+        0 1px 0 rgba(220, 232, 213, 0.2);
+}
+
+.lcd-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.brand-logo {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: -0.02em;
+    color: var(--soft-yellow);
+}
+
+.model-banner {
+    flex: 1;
+    background-color: var(--soft-yellow);
+    color: var(--forest-green);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-align: center;
+    padding: 2px 6px;
+    border-radius: 2px;
+}
+
+.power-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid var(--soft-yellow);
+    color: var(--soft-yellow);
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 1px 4px;
+    border-radius: 2px;
+}
+
+.battery-icon {
+    display: inline-block;
+    width: 9px;
+    height: 6px;
+    background-color: var(--soft-yellow);
+    border-radius: 1px;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.lcd-bezel {
+    background: #121c0e;
+    padding: 4px;
+    border-radius: 5px;
+    border: 1px solid rgba(232, 201, 111, 0.25);
+}
+
+.lcd-screen {
+    position: relative;
+    background-color: var(--dark-lcd-green);
+    background-image:
+        linear-gradient(180deg, rgba(16, 30, 24, 0.55) 0%, rgba(37, 63, 53, 0.15) 35%, rgba(20, 38, 30, 0.45) 100%),
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.08) 0px, rgba(0, 0, 0, 0.08) 1px, transparent 1px, transparent 3px);
+    border-radius: 3px;
+    padding: 7px 11px 6px;
+    min-height: 66px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     overflow: hidden;
+    box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.72);
+    transition: filter 0.25s ease, opacity 0.25s ease;
 }
 
-button:hover{
-    background-color: #a79c8f7a;
+.lcd-screen.powered-off {
+    filter: brightness(0.42) saturate(0.4);
 }
 
-button:active{
-    background-color: #edd7bc9e;
+.lcd-screen.powered-off .lcd-expression,
+.lcd-screen.powered-off .lcd-value {
+    opacity: 0;
 }
 
-.operator{
-    background-color: #530c65;
-    color: white;
+.lcd-expression {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--lcd-text);
+    opacity: 0.78;
+    text-align: right;
+    min-height: 15px;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lcd-main-row {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+    height: 36px;
+}
+
+.lcd-ghost {
+    position: absolute;
+    right: 0;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 800;
+    font-size: 30px;
+    letter-spacing: 0.04em;
+    color: var(--lcd-ghost);
+    pointer-events: none;
+}
+
+.lcd-value {
+    position: relative;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 800;
+    font-size: 30px;
+    letter-spacing: 0.04em;
+    color: var(--lcd-glow);
+    text-shadow:
+        0 0 10px rgba(216, 242, 77, 0.55),
+        0 0 2px rgba(216, 237, 199, 0.85);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    transition: font-size 0.12s ease;
+}
+
+.lcd-value.compact {
+    font-size: 22px;
+}
+
+.lcd-value.error-state {
+    color: var(--soft-yellow);
+    text-shadow: 0 0 8px rgba(232, 201, 111, 0.55);
+}
+
+.lcd-footer-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.footer-tag {
+    background-color: var(--soft-yellow);
+    color: var(--forest-green);
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 1px 6px;
+    border-radius: 2px;
+}
+
+.footer-line {
+    flex: 1;
+    height: 2px;
+    background-color: var(--soft-yellow);
+    opacity: 0.85;
+}
+
+/* ==========================================================================
+   4-Column Tactile Translucent Green Keycap Grid
+   ========================================================================== */
+.keypad-well {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 62px;
+    gap: 8px;
+    background-color: var(--well-bg);
+    padding: 10px;
+    border-radius: 14px;
+    border: 2px solid #182511;
+    box-shadow:
+        inset 0 4px 10px rgba(0, 0, 0, 0.65),
+        0 1px 0 rgba(220, 232, 213, 0.18);
+}
+
+.keycap {
+    position: relative;
+    appearance: none;
+    border: 2px solid var(--cap-border);
+    border-radius: 11px;
+    background: linear-gradient(180deg, #5c753e 0%, #44592c 100%);
+    padding: 4px 5px 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: stretch;
+    justify-content: stretch;
+    box-shadow:
+        0 4px 0 #1b2812,
+        0 6px 8px rgba(0, 0, 0, 0.45),
+        inset 0 1px 1px rgba(220, 232, 213, 0.35);
+    transition: transform 0.06s ease, box-shadow 0.06s ease, filter 0.12s ease;
+}
+
+/* Sculpted dished keycap top surface */
+.cap-top {
+    flex: 1;
+    border-radius: 7px;
+    background: radial-gradient(circle at 50% 45%, #849f5e 0%, #6f894b 78%, #5e763e 100%);
+    border: 1px solid rgba(220, 232, 213, 0.25);
+    box-shadow:
+        inset 0 2px 4px rgba(24, 38, 17, 0.32),
+        inset 0 -1px 2px rgba(220, 232, 213, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Chakra Petch', sans-serif;
+    font-weight: 700;
+    font-size: 21px;
+    color: var(--soft-yellow);
+    text-shadow: 0 1px 1px rgba(20, 32, 15, 0.7);
+    position: relative;
+}
+
+/* Subtle differentiation between numbers, operators, and utilities */
+.key-op .cap-top {
+    background: radial-gradient(circle at 50% 45%, #759052 0%, #5e783f 80%, #4f6734 100%);
+    font-size: 23px;
+}
+
+.key-util .cap-top {
+    background: radial-gradient(circle at 50% 45%, #6a8652 0%, var(--muted-green) 85%, #4a6e57 100%);
+    font-size: 19px;
+}
+
+/* 2u Wide '0' Key (spans columns 1-2 on bottom row) */
+.key-zero {
+    grid-column: span 2;
+}
+
+.key-zero .cap-top {
+    justify-content: flex-start;
+    padding-left: 24px;
+}
+
+/* 2u Tall Vertical 'ENTER' Key (spans rows 4-5 on column 4) */
+.key-enter {
+    grid-row: span 2;
+    background: linear-gradient(180deg, #647f43 0%, #485f2f 100%);
+}
+
+.key-enter .cap-top {
+    background: radial-gradient(circle at 50% 45%, #89a562 0%, #718c4d 80%, #5f783f 100%);
+}
+
+.vertical-text {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1;
+}
+
+/* Tactile homing bar under '5' */
+.homing-bar {
+    position: absolute;
+    bottom: 7px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 2.5px;
+    border-radius: 2px;
+    background-color: rgba(232, 201, 111, 0.65);
+}
+
+/* Hover & Mechanical Keypress States */
+.keycap:hover {
+    filter: brightness(1.06);
+}
+
+.keycap:active,
+.keycap.pressed {
+    transform: translateY(3px);
+    box-shadow:
+        0 1px 0 #1b2812,
+        0 2px 3px rgba(0, 0, 0, 0.5),
+        inset 0 2px 4px rgba(0, 0, 0, 0.45);
+}
+
+.keycap:focus-visible,
+.round-btn:focus-visible,
+.rotary-dial:focus-visible {
+    outline: 2px solid var(--soft-yellow);
+    outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Responsive Design across Mobile, Tablet & Desktop
+   ========================================================================== */
+@media (max-width: 420px) {
+    body {
+        padding: 10px;
+    }
+
+    .device-shell {
+        max-width: 344px;
+        padding: 16px 15px 18px;
+        border-radius: 22px;
+    }
+
+    .rotary-dial,
+    .round-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .dial-ridge {
+        height: 38px;
+    }
+
+    .round-buttons {
+        gap: 8px;
+    }
+
+    .keypad-well {
+        grid-auto-rows: 54px;
+        gap: 6px;
+        padding: 8px;
+    }
+
+    .cap-top {
+        font-size: 19px;
+    }
+
+    .lcd-value,
+    .lcd-ghost {
+        font-size: 26px;
+    }
+
+    .lcd-value.compact {
+        font-size: 19px;
+    }
+}
+
+@media (max-height: 640px) {
+    .device-shell {
+        padding: 14px 16px;
+    }
+
+    .top-controls,
+    .lcd-module {
+        margin-bottom: 10px;
+    }
+
+    .keypad-well {
+        grid-auto-rows: 50px;
+        gap: 6px;
+    }
 }
